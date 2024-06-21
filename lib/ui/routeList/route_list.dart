@@ -85,13 +85,13 @@ class RouteListDialog extends StatelessWidget {
 
                           ListView.builder(
                             shrinkWrap: true,
-                            itemCount:  value.demoRouteList.length, //modeldata?.length ?? 0,
+                            itemCount: modeldata?.length ?? 0,// value.demoRouteList.length,
                             itemBuilder: (context, index) {
                             return Column(
                               children: [
                                 const SizedBox(height: 10,),
                                 GestureDetector(
-                                  onTap: () {
+                                  onTap: () async {
                                     // Future.microtask(() {
                                     //   value.selectedRouteList(
                                     //       modeldata?.data?[0].id.toString(),
@@ -103,11 +103,9 @@ class RouteListDialog extends StatelessWidget {
                                     //   );
                                     // });
 
-                                   // value.routeDetailsApi(id: modeldata![index].id!); todo call this
+                                    await value.routeDetailsApi(id: modeldata![index].id!);
 
-                                    mDialog(context, CommonImageDialogB(title: value.demoRouteList[index].address));
-
-
+                                    //mDialog(context, CommonImageDialogB(title: value.demoRouteList[index].address));
                                    // mDialog(context, CommonImageDialogB(title: value.demoRouteList[index].address, inspectedTime: value.demoRouteList[index].inspectedTime ,));
                                   },
                                   child: Row(
@@ -126,8 +124,8 @@ class RouteListDialog extends StatelessWidget {
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                              Text(
-                                               value.demoRouteList[index].address ,
-                                                 //modeldata?.[index].address ?? "",
+                                              // value.demoRouteList[index].address ,
+                                                 modeldata?[index].additionalInfo ?? "",
                                                 textAlign: TextAlign.start,
                                                 style: const TextStyle(
                                                     fontFamily: FontFamily.neueMedium,
@@ -142,7 +140,8 @@ class RouteListDialog extends StatelessWidget {
                                          //StartTime
                                                value.demoRouteList[index].startTime.isNotEmpty
                                                  ? Text(
-                                                    value.startDateTimeConvert(value.demoRouteList[index].startTime),
+                                                    // value.startDateTimeConvert(value.demoRouteList[index].startTime),
+                                                    value.startDateTimeConvert("2024-04-16 09:30:00"),
                                                      // value.formatDateTime(modeldata?.data?[index].datetime) ?? "" ,
                                          
                                                     textAlign: TextAlign.start,
@@ -158,7 +157,8 @@ class RouteListDialog extends StatelessWidget {
                                          //EndTime
                                                value.demoRouteList[index].endTime.isNotEmpty
                                                  ? Text(
-                                                   " - ${value.startDateTimeConvert(value.demoRouteList[index].endTime)}",
+                                                   // " - ${value.startDateTimeConvert(value.demoRouteList[index].endTime)}",
+                                                   " - ${value.startDateTimeConvert("2024-04-16 10:00:00")}",
                                                      // value.formatDateTime(modeldata?.data?[index].datetime) ?? "" ,
                                          
                                                      textAlign: TextAlign.start,
@@ -196,7 +196,8 @@ class RouteListDialog extends StatelessWidget {
                                             value.demoRouteList[index].inspectedTime == ""
                                                 ? SizedBox()
                                                 : Text(
-                                                "Inspected at ${value.startDateTimeConvert(value.demoRouteList[index].inspectedTime)}",
+                                                "Inspected at ${value.startDateTimeConvert("2024-04-16 10:40:00")}",
+                                                // "Inspected at ${value.startDateTimeConvert(value.demoRouteList[index].inspectedTime)}",
                                                 // value.formatDateTime(modeldata?.data?[index].datetime) ?? "" ,
 
                                                 textAlign: TextAlign.center,
@@ -240,43 +241,43 @@ class RouteListDialog extends StatelessWidget {
                                           ),
                                         ),
                                         child: Center(
-                                          child: Text(
-                                            value.dateTimeCompare(
-                                                value.demoRouteList[index].startTime,
-                                                value.demoRouteList[index].endTime,
-                                                value.demoRouteList[index].inspectedTime,
-                                                index,
-                                            ) == "Unscheduled"
-                                              ? "Unscheduled"
-                                              : value.dateTimeCompare(
-                                                  value.demoRouteList[index].startTime,
-                                                  value.demoRouteList[index].endTime,
-                                                  value.demoRouteList[index].inspectedTime,
-                                                   index,
-                                                ) == "Scheduled"
-                                                ? "Scheduled"
-                                                : value.dateTimeCompare(
-                                                    value.demoRouteList[index].startTime,
-                                                    value.demoRouteList[index].endTime,
-                                                    value.demoRouteList[index].inspectedTime,
-                                                     index,
-                                                  ) == "Inspected"
-                                                  ? "Inspected"
-                                                  : value.dateTimeCompare(
-                                                      value.demoRouteList[index].startTime,
-                                                      value.demoRouteList[index].endTime,
-                                                      value.demoRouteList[index].inspectedTime,
-                                                      index,
-                                                    ) == "Late"
-                                                    ? "Late"
-                                                    :  value.dateTimeCompare(
-                                                          value.demoRouteList[index].startTime,
-                                                          value.demoRouteList[index].endTime,
-                                                          value.demoRouteList[index].inspectedTime,
-                                                          index,
-                                                        ) == "Early"
-                                                      ? "Early"
-                                                      : "Duplicate",
+                                          child: Text("Unscheduled",
+                                            // value.dateTimeCompare(
+                                            //     value.demoRouteList[index].startTime,
+                                            //     value.demoRouteList[index].endTime,
+                                            //     value.demoRouteList[index].inspectedTime,
+                                            //     index,
+                                            // ) == "Unscheduled"
+                                            //   ? "Unscheduled"
+                                            //   : value.dateTimeCompare(
+                                            //       value.demoRouteList[index].startTime,
+                                            //       value.demoRouteList[index].endTime,
+                                            //       value.demoRouteList[index].inspectedTime,
+                                            //        index,
+                                            //     ) == "Scheduled"
+                                            //     ? "Scheduled"
+                                            //     : value.dateTimeCompare(
+                                            //         value.demoRouteList[index].startTime,
+                                            //         value.demoRouteList[index].endTime,
+                                            //         value.demoRouteList[index].inspectedTime,
+                                            //          index,
+                                            //       ) == "Inspected"
+                                            //       ? "Inspected"
+                                            //       : value.dateTimeCompare(
+                                            //           value.demoRouteList[index].startTime,
+                                            //           value.demoRouteList[index].endTime,
+                                            //           value.demoRouteList[index].inspectedTime,
+                                            //           index,
+                                            //         ) == "Late"
+                                            //         ? "Late"
+                                            //         :  value.dateTimeCompare(
+                                            //               value.demoRouteList[index].startTime,
+                                            //               value.demoRouteList[index].endTime,
+                                            //               value.demoRouteList[index].inspectedTime,
+                                            //               index,
+                                            //             ) == "Early"
+                                            //           ? "Early"
+                                            //           : "Duplicate",
                                             // AppText.schedule ,
                                             style: TextStyle(
                                               fontFamily: FontFamily.neueMedium,
@@ -302,7 +303,7 @@ class RouteListDialog extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 5,),
-                                index+1 == value.demoRouteList.length  //modeldata?.data?.length
+                                index+1 == modeldata?.length  //modeldata?.data?.length
                                 ? const SizedBox()
                                 : Container(
                                   width: MediaQuery.of(context).size.width ,

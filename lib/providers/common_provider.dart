@@ -44,7 +44,7 @@ class CommonProvider with ChangeNotifier {
  //      inspectedTime: "2024-04-16 13:11:00", flagVal: 6),
  // ];
  List<DemoModel> demoRouteList = [
-  DemoModel(address: "JP Loft", startTime: "2024-04-16 09:30:00",endTime: "2024-04-16 10:00:00",
+  DemoModel(address: "Cyber City", startTime: "2024-04-16 09:30:00",endTime: "2024-04-16 10:00:00",
              inspectedTime: "", flagVal: 0),
 
   DemoModel(address: "Cyber City", startTime: "2024-04-16 10:30:00",endTime: "2024-04-16 11:00:00",
@@ -69,17 +69,24 @@ class CommonProvider with ChangeNotifier {
 
 
  routeListApi({required int id}) async {
-  final response = await ApiBaseHelper().getApiCall("$routeList$id");
-  print("Route List Api hit 2:: ");
+  try {
+   final response = await ApiBaseHelper().getApiCall("$routeList$id");
+   print("Route List Api hit 2:: ");
 
-  // model = RouteListModel.fromJson(response);
-   RouteListResponse ? routeListResponse= RouteListResponse.fromJson(response);
-  // GoX.goPush(const DashboardScreen());
-  // if (model?.status == true) {
-  //    mDialog(context, RouteListDialog(title: "Route List", modeldata: model ,));
-  // }
-  if (response?.statusCode == 200) {
-     mDialog(context, RouteListDialog(title: "Route List", modeldata: routeListResponse.inspections ,));
+   // model = RouteListModel.fromJson(response);
+   RouteListResponse ? routeListResponse = RouteListResponse.fromJson(response);
+   // GoX.goPush(const DashboardScreen());
+   // if (model?.status == true) {
+   //    mDialog(context, RouteListDialog(title: "Route List", modeldata: model ,));
+   // }
+   if (response?.statusCode == 200) {
+    mDialog(context, RouteListDialog(
+     title: "Route List", modeldata: routeListResponse.inspections,));
+   } else {
+    mDialog(context, RouteListDialog(title: "Route List", modeldata: [],));
+   }
+  }catch(e){
+   mDialog(context, RouteListDialog(title: "Route List", modeldata: [],));
   }
  }
 
