@@ -2,14 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:valitag/api_services/api_config.dart';
 import 'package:valitag/model/routeList_model.dart';
-import 'package:valitag/model/route_list_modal_client.dart';
 
 import '../api_services/api_base_helper.dart';
 import '../dialog/imageDialogB.dart';
 import '../model/demo_model.dart';
 import '../model/product_model.dart';
 import '../ui/routeList/route_list.dart';
+import '../ui/startScanAsset/start_scan_asset.dart';
 import '../utils/common_widget.dart';
+import '../utils/gox.dart';
 import '../utils/navigator_service.dart';
 
 class CommonProvider with ChangeNotifier {
@@ -17,35 +18,12 @@ class CommonProvider with ChangeNotifier {
  get context => NavigationService.navigatorKey.currentContext;
 
  RouteListModel? model;
- List<RouteDetailsModal>? allAssets=[];
  ProductModel? modal;
  String routeId = "";
 
- // List<DemoModel> demoRouteList = [
- //  DemoModel(address: "JP Loft", startTime: "2024-04-16 09:30:00",endTime: "2024-04-16 10:00:00",
- //             inspectedTime: "", flagVal: 0),
- //
- //  DemoModel(address: "Cyber City", startTime: "2024-04-16 10:30:00",endTime: "2024-04-16 11:00:00",
- //      inspectedTime: "2024-04-16 10:40:00", flagVal: 1),
- //
- //  DemoModel(address: "Cyber Hub", startTime: "2024-04-16 11:00:00",endTime: "2024-04-16 11:30:00",
- //      inspectedTime: "2024-04-16 10:50:00", flagVal: 2),
- //
- //  DemoModel(address: "Green Park", startTime: "2024-04-16 11:30:00",endTime: "2024-04-16 12:00:00",
- //      inspectedTime: "2024-04-16 12:40:00", flagVal: 3),
- //
- //  DemoModel(address: "Sports Club", startTime: "",endTime: "",
- //      inspectedTime: "2024-04-16 12:55:00", flagVal: 4),
- //
- //  DemoModel(address: "Play School", startTime: "",endTime: "",
- //      inspectedTime: "2024-04-16 13:11:00", flagVal: 5),
- //
- //  DemoModel(address: "Cafe Hub", startTime: "",endTime: "",
- //      inspectedTime: "2024-04-16 13:11:00", flagVal: 6),
- // ];
  List<DemoModel> demoRouteList = [
-  DemoModel(address: "Cyber City", startTime: "2024-04-16 09:30:00",endTime: "2024-04-16 10:00:00",
-             inspectedTime: "", flagVal: 0),
+  DemoModel(address: "JP Loft", startTime: "2024-04-16 09:30:00",endTime: "2024-04-16 10:00:00",
+      inspectedTime: "", flagVal: 0),
 
   DemoModel(address: "Cyber City", startTime: "2024-04-16 10:30:00",endTime: "2024-04-16 11:00:00",
       inspectedTime: "2024-04-16 10:40:00", flagVal: 1),
@@ -68,93 +46,41 @@ class CommonProvider with ChangeNotifier {
 
 
 
- routeListApi({required int id}) async {
-  try {
-   final response = await ApiBaseHelper().getApiCall("$routeList$id");
-   print("Route List Api hit 2:: ");
+ routeListApi() async
+ {
+  var response = await ApiBaseHelper().getApiCall(routeList,);
+  print("Route List Api hit 2:: ${response}");
 
-   // model = RouteListModel.fromJson(response);
-   RouteListResponse ? routeListResponse = RouteListResponse.fromJson(response);
-   // GoX.goPush(const DashboardScreen());
-   // if (model?.status == true) {
-   //    mDialog(context, RouteListDialog(title: "Route List", modeldata: model ,));
-   // }
-   if (response?.statusCode == 200) {
-    mDialog(context, RouteListDialog(
-     title: "Route List", modeldata: routeListResponse.inspections,));
-   } else {
-    mDialog(context, RouteListDialog(title: "Route List", modeldata: [],));
-   }
-  }catch(e){
-   mDialog(context, RouteListDialog(title: "Route List", modeldata: [],));
+  model = RouteListModel.fromJson(response);
+  // GoX.goPush(const DashboardScreen());
+  if (model?.status == true)
+  {
+     mDialog(context, RouteListDialog(title: "Route List", modeldata: model));
   }
  }
 
- routeDetailsApi({required String id}) async {
-  final response = await ApiBaseHelper().getApiCall("$routeDetails$id");
-   RouteDetailsModal ? detailsModal= RouteDetailsModal.fromJson(response);
-   if (response?.statusCode == 200) {
-    mDialog(context, CommonImageDialogB(modal:detailsModal));
-   }
- }
-
- getAllAssetsApi({required int id}) async {
-  final response = await ApiBaseHelper().getApiCall(getAllAssets);
-  print("Route List Api hit 2:: ");
-
-  // model = RouteListModel.fromJson(response);
-  allAssets=(response as List).map((e) => RouteDetailsModal.fromJson(e)).toList();
-  // GoX.goPush(const DashboardScreen());
-  // if (model?.status == true) {
-  //    mDialog(context, RouteListDialog(title: "Route List", modeldata: model ,));
-  // }
-  // if (response?.statusCode == 200) {
-  // // mDialog(context, RouteListDialog(title: "Route List", modeldata: routeListResponse.inspections ,));
-  // }
- }
-
- assetDetailsApi({required String id}) async {
-  final response = await ApiBaseHelper().getApiCall("$assetsDetails$id");
-  print("Route details Api hit 2:: ");
-
-  // model = RouteListModel.fromJson(response);
-   RouteDetailsModal ? detailsModal= RouteDetailsModal.fromJson(response);
-  // GoX.goPush(const DashboardScreen());
-  // if (model?.status == true) {
-  //    mDialog(context, RouteListDialog(title: "Route List", modeldata: model ,));
-  // }
-  if (response?.statusCode == 200) {
-    mDialog(context, CommonImageDialogB(modal:detailsModal));
-  }
- }
-
- Future<dynamic>uploadImagesApi({required String id}) async {
-  Map<String,dynamic> body={};
-  final response = await ApiBaseHelper().postApiCall(true,uploadImages(id),body);
-  return response;
- }
-
- selectedRouteList(String? routeId, String? address ,String inspectedTime) async {
-  // String meridiemTime = "am";
-  // String hours = inspectedTime.split(":")[0];
-  //
-  // if(int.parse(hours) > 12)
-  //  {
-  //   meridiemTime = "pm";
-  //  }
-  //
-  // var response = await ApiBaseHelper().getApiCall("$product?route_id=$routeId");
-  // print("Route List Api hit 2:: ");
-  //
-  // modal = ProductModel.fromJson(response);
-  //
-  // if(modal?.status == true)
-  //  {
-  //    mDialog(context, CommonImageDialogB(title: address,
-  //     inspectedTime: inspectedTime, modal: modal, meridiemTime: meridiemTime,));
-  //  }
-  // mDialog(context, CommonImageDialogB(title: "457 Next Avenue",));
- }
+ // selectedRouteList(String? routeId, String? address ,String inspectedTime) async {
+ //  String meridiemTime = "am";
+ //  String hours = inspectedTime.split(":")[0];
+ //
+ //  if(int.parse(hours) > 12)
+ //   {
+ //    meridiemTime = "pm";
+ //   }
+ //  print("Select Route List API::  $routeId");
+ //  var response = await ApiBaseHelper().getApiCall("$product?route_id=$routeId");
+ //  print("Select Route List API::  $response");
+ //
+ //  modal = ProductModel.fromJson(response);
+ //
+ //  if(modal?.status == true)
+ //   {
+ //    GoX.goPush(const StartScanAsset());
+ //     // mDialog(context, CommonImageDialogB(title: address,
+ //     //  inspectedTime: inspectedTime, modal: modal, meridiemTime: meridiemTime,));
+ //   }
+ //  // mDialog(context, CommonImageDialogB(title: "457 Next Avenue",));
+ // }
 
  String? formatDateTime(String? timeString) {
   print("Time String is :: ${timeString}");

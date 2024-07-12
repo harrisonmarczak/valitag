@@ -24,7 +24,7 @@ class ImageFullScreen extends StatelessWidget {
         child: Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          child: Image.asset(imagePath),
+          child: imagePath.contains('https') ? Image.network(imagePath) : Image.asset(imagePath),
         ),
       ),
     );

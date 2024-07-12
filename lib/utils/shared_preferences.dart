@@ -13,6 +13,8 @@ class SpUtil {
   static const String REMEBER_ME = "remeber_me";
   static const String EMAIL = "email";
   static const String PASSWORD = "password";
+  static const String userId = "userId";
+  static const String nfcId = "nfcId";
 
 
 

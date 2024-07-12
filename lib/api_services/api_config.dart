@@ -16,10 +16,11 @@ const String VERSION = 'v1/';
 
 
 // const String BASE_URL = 'https://v5.checkprojectstatus.com/valitag/api/';
-const String BASE_URL = 'https://test2.valitag.com.au/';
+const String BASE_URL = 'https://v1.checkprojectstatus.com/valitag/api/';
 
-
-const String baseImageUrl = 'https://v5.checkprojectstatus.com/valitag/';
+// const String baseImageUrl = 'https://v1.checkprojectstatus.com/valitag/';
+const String baseImageUrl = 'https://v1.checkprojectstatus.com/valitag/public/';
+const String baseImageUrl1 = 'https://v1.checkprojectstatus.com/valitag/';
 
 
 String FCM_Token = '12345';
@@ -28,14 +29,11 @@ String TIME_ZONE = '';
 
 // APIs url users
 const String login = 'login';
+const String nfclogin = 'nfclogin';
+const String nfcRouteCreate = 'nfcroute_create';
 
 
-const String routeList = 'route/getByUser?ID=';
-const String routeDetails = 'route/';
-const String getAllAssets= 'asset/all';
-String uploadImages(id)=>'/inspection/$id/uploadImage';
-String uploadInspection(int routeId,int assetId,String note)=>'route/$routeId/inspection?assetId=$assetId&note=$note';
-const String assetsDetails = 'asset/';
+const String routeList = 'route_list';
 const String contactUs = 'contactus';
 
 const String product = 'product';

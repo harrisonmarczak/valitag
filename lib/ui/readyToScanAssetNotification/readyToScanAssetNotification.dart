@@ -80,7 +80,9 @@ class _ReadyToScanState extends State<ReadyToScanAssetNotification> {
                 bottom: 20, left: width*0.08,
                 child: Column(
                   children: [
+
                     SizedBox(height: 20,),
+
                     Container(
                       padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                       width: MediaQuery.of(context).size.width *0.8,
@@ -116,7 +118,9 @@ class _ReadyToScanState extends State<ReadyToScanAssetNotification> {
                         ],
                       ),
                     ),
+
                     const SizedBox(height: 30,),
+
                     SizedBox(
                       width: MediaQuery.of(context).size.width/1.2,
                       height: MediaQuery.of(context).size.width/7.5,

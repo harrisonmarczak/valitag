@@ -2,12 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:maps_launcher/maps_launcher.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:valitag/constants/fontFamily.dart';
 import 'package:valitag/constants/imageText/app_images.dart';
 import 'package:valitag/constants/text/app_text.dart';
 import 'package:valitag/model/routeList_model.dart';
-import 'package:valitag/model/route_list_modal_client.dart';
 import 'package:valitag/ui/readyToScanAsset1/readyToScanAsset1.dart';
 
 import '../api_services/api_config.dart';
@@ -30,7 +28,7 @@ class CommonImageDialogB extends StatelessWidget {
   final Function()? positiveTap;
   final Function()? negativeTap;
   final String? meridiemTime;
-  final  RouteDetailsModal? modal;
+  final  ProductModel? modal;
 
   const CommonImageDialogB({
     super.key,
@@ -81,8 +79,8 @@ class CommonImageDialogB extends StatelessWidget {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(top: modal?.name == "" ? 0 : 20.0),
-                        child: Text(modal?.name ?? "Dialog Title",
+                        padding: EdgeInsets.only(top: title == "" ? 0 : 20.0),
+                        child: Text(title ?? "Dialog Title",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontFamily: FontFamily.neueMedium,
@@ -97,49 +95,73 @@ class CommonImageDialogB extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
 
-                          SizedBox(
+                          Container(
                               height: 20, width: 20,
                               child: Image.asset(AppImages.startScanClockIcon)),
                           const SizedBox(width: 10,),
 
-                          const Text(
-                            "Inspection 10:40 am" ,
+                          Text(inspectedTime ?? '',
+                            // "Inspection 10:40 am" ,
                             // AppText.startScanInspectedTime ,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontFamily: FontFamily.neueLight,
                               color: Color(0xff434343),
                               fontSize: 14,
                             ),
                           ),
+
+                          // Text(
+                          //   "Inspection ${inspectedTime} $meridiemTime" ,
+                          //   // AppText.startScanInspectedTime ,
+                          //   style: const TextStyle(
+                          //     fontFamily: FontFamily.neueLight,
+                          //     color: Color(0xff434343),
+                          //     fontSize: 14,
+                          //   ),
+                          // ),
                         ],
                       ),
+
+
                       const SizedBox(height: 20),
+
                       Container(
+                        // height: 200,
                         width: MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10)
                         ),
-                        child:  (modal?.assetNo?? "").isNotEmpty
+                        child:  (modal?.data?.route?.image.toString() ?? "").isNotEmpty
                                 ? ClipRRect(
                                   borderRadius: BorderRadius.circular(20),
-                                  child: Image.network("$baseImageUrl${modal?.assetNo}"))
+                                  child: Image.network("${modal?.data?.route?.image}", fit: BoxFit.cover,errorBuilder: (BuildContext, Object, StackTrace){
+                                    return Container(
+                                      color: Colors.grey,
+                                    );
+                                  }))
                                 : Image.asset(AppImages.aquariumImage)
                       ),
+
                       const SizedBox(height: 10,),
-                      const Text(
-                              "Asset Instruction : ${AppText.assetInstruction}",
+
+                      modal?.data != null && modal?.data!.assetsNotes != null && modal?.data!.assetsNotes!.isNotEmpty == true ? Text(
+                          "Asset Instruction : ${modal?.data?.assetsNotes?.first.description ?? 'N/A'}",
+                              // "Asset Instruction : ${AppText.assetInstruction}",
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontFamily: FontFamily.neueLight,
                               color: Color(0xff000000),
                               //fontWeight: FontWeight.w600,
                               fontSize: 14
                           )
-                      ),
+                      ) : SizedBox.shrink(),
+
                       const SizedBox(height: 20,),
+
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
+//CloseButton
                           GestureDetector(
                             onTap : () {
                               GoX.goPop();
@@ -162,11 +184,14 @@ class CommonImageDialogB extends StatelessWidget {
                               ),
                             ),
                           ),
+//MapButton
                           GestureDetector(
                             onTap: () {
-                              //MapsLauncher.launchQuery( '1600 Amphitheatre Pkwy, Mountain View, CA 94043, USA');
-                              openGoogleMaps(lat:modal?.latitude,long:modal?.longitude);
-                            //  GoX.goPush(GoogleMap());
+                              // MapsLauncher.launchQuery( '1600 Amphitheatre Pkwy, Mountain View, CA 94043, USA');
+                              if(modal != null && modal!.data != null && modal!.data!.route != null && modal!.data!.route!.address != null){
+                                MapsLauncher.launchQuery('${modal!.data!.route!.address}');
+                              }
+                              // GoX.goPush(GoogleMap());
                             },
                             child: Container(
                               height: 46, width: MediaQuery.of(context).size.width/3,
@@ -188,6 +213,63 @@ class CommonImageDialogB extends StatelessWidget {
                           ),
                         ],
                       ),
+
+
+
+                      /* Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (isPositive == true) ...[
+                            Padding(
+                              padding:
+                              const EdgeInsets.symmetric(horizontal: 10.0),
+                              child: SmartButton(
+                                  value: textPositive ?? 'Yes',
+                                  onTap: () {
+
+
+
+                                     GoX.goPop();
+                                    // print("Yes Button tapped");
+                                    positiveTap?.call();
+                                  },
+                                  wrap: true,
+                                  radius: 50,
+                                  color: Color(0xff858686),
+                                  height: 55,
+                                  width: 107,
+                                  // textStyle: light(
+                                  //     fontSize: 15,
+                                  //     color: AppColors.bgColorTextField)
+                              ),
+                            ),
+                          ],
+                          if (isNegative == true) ...[
+                            Padding(
+                              padding:
+                              const EdgeInsets.symmetric(horizontal: 10.0),
+                              child: SmartButton(
+                                  value: textNegative ?? 'No',
+                                  onTap: () {
+                                    print("No Button tapped");
+                                    GoX.goPop();
+                                    negativeTap?.call();
+                                  },
+                                  wrap: true,
+                                  radius: 50,
+                                  // borderColor: AppColors.themeColor,
+                                  color: Color(0xff007FC5),
+                                  height: 55,
+                                  borderWidth: 2,
+                                  width: 107,
+                                  // textStyle: light(
+                                  //     fontSize: 15,
+                                  //     color: AppColors.themeColor)
+                              ),
+                            ),
+                          ]
+                        ],
+                      ),*/
                       const SizedBox(height: 35),
                     ],
                   ),
@@ -200,23 +282,5 @@ class CommonImageDialogB extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void openGoogleMaps({String ? lat, String ? long}) async {
-    // Replace with your desired latitude and longitude
-     double latitude = double.parse(lat??"26.922070");
-     double longitude = double.parse(long??"75.778885");
-
-    // Create the Google Maps URL
-    final Uri googleMapsUrl = Uri.parse('https://www.google.com/maps/search/?api=1&query=$latitude,$longitude');
-
-    // Check if the URL can be launched
-    if (await canLaunchUrl(googleMapsUrl)) {
-      // Launch the URL
-      await launchUrl(googleMapsUrl);
-    } else {
-      // If the URL cannot be launched, print an error message
-      print('Could not open Google Maps.');
-    }
   }
 }

@@ -84,9 +84,9 @@ class CommonDialog extends StatelessWidget {
 
 //TextFormField
                         title == "Logout"
-                          ? const Text(
+                          ? Text(
                             "Are you sure you want to Logout ?",
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontFamily: FontFamily.neueMedium,
                               color: Color(0xff686868),
                               fontSize: 15,
@@ -148,8 +148,8 @@ class CommonDialog extends StatelessWidget {
                                 onTap: () {
                                   if(title == "Logout")
                                     {
-                                      // value.logout();
-                                      GoX.goPushRemoveUntil(LoginScreen());
+                                       value.logout();
+                                     //GoX.goPushRemoveUntil(LoginScreen());
                                     }
                                   else
                                     {

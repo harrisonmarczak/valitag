@@ -4,6 +4,8 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:nfc_manager/nfc_manager.dart';
 import 'package:valitag/main.dart';
 import 'package:valitag/ui/loginScreen/login_screen.dart';
 import 'package:valitag/utils/gox.dart';
@@ -14,6 +16,11 @@ import '../api_services/api_base_helper.dart';
 import '../api_services/api_config.dart';
 import '../constants/text/app_text.dart';
 import '../model/productSave_model.dart';
+import '../model/product_model.dart';
+import '../model/routeList_model.dart';
+import '../ui/readyToScan/ready_to_scan.dart';
+import '../ui/startScanAsset/start_scan_asset.dart';
+import '../ui/startScanAssetRouteB/startScanAssetRouteB.dart';
 
 class ScanAssetProvider with ChangeNotifier {
 
@@ -23,6 +30,8 @@ class ScanAssetProvider with ChangeNotifier {
   TextEditingController notesCont = TextEditingController();
   String notesText = AppText.notesText;
   String notesHeading = "Note: ";
+  ProductModel? modal;
+  RouteListModel? routeModal;
 
 
   // String notesText = "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.";
@@ -48,6 +57,32 @@ class ScanAssetProvider with ChangeNotifier {
     }
   }
 
+  Future<void> getImageCameraData() async {
+    print("Image Gallery Function :::");
+    final ImagePicker picker = ImagePicker();
+    image = await picker.pickImage(source: ImageSource.camera);
+    if(image != null)
+    {
+      print("Imagges is :: ${image}");
+      print("Imagges is :: ${image!.path}");
+
+      notifyListeners();
+    }
+  }
+
+  String? formatDateTime(String? timeString) {
+    print("Time String is :: ${timeString}");
+
+    if((timeString ?? '').isNotEmpty)
+    {
+      DateTime dateTime = DateTime.parse(timeString!);
+      String formattedTime = DateFormat.Hm().format(dateTime);
+      print("Format time is :: ${formattedTime}");
+      return formattedTime;
+    }
+    return "";
+  }
+
   saveImages() {
     if(image == null) return;
     allImages?.add(image);
@@ -63,9 +98,12 @@ class ScanAssetProvider with ChangeNotifier {
 
 
   saveNotes() {
-    if(notesCont.text.isNotEmpty) {
-      if(notesCont.text.toString().trim().isNotEmpty) {
+    if(notesCont.text.isNotEmpty)
+    {
+      if(notesCont.text.toString().trim().isNotEmpty)
+      {
         notesText = notesCont.text;
+        // notesCont.clear();
         notifyListeners();
       }
       else
@@ -86,12 +124,13 @@ class ScanAssetProvider with ChangeNotifier {
 
   logout() {
     var checkVal = sp?.getBool(SpUtil.REMEBER_ME) ?? false;
-    if(checkVal){
-      sp?.clearImportantKeys();
-    }else{
-      sp?.clear();
-    }
-
+    sp?.clear();
+    // if(checkVal){
+    //   sp?.clearImportantKeys();
+    // }else{
+    //   sp?.clear();
+    // }
+    NfcManager.instance.stopSession();
     GoX.goPushRemoveUntil(LoginScreen());
   }
 
@@ -112,7 +151,28 @@ class ScanAssetProvider with ChangeNotifier {
 
   }
 
+  selectedRouteList(String? routeId, String? address ,String inspectedTime) async {
+    String meridiemTime = "am";
+    String hours = inspectedTime.split(":")[0];
 
+    if(int.parse(hours) > 12)
+    {
+      meridiemTime = "pm";
+    }
+    print("Select Route List API:: --->  $routeId");
+    var response = await ApiBaseHelper().getApiCall("$product?route_id=$routeId");
+    print("Select Route List API:: ---> $response");
+
+    modal = ProductModel.fromJson(response);
+
+    if(modal?.status == true)
+    {
+      GoX.goPush(const StartScanAsset());
+      // mDialog(context, CommonImageDialogB(title: address,
+      //  inspectedTime: inspectedTime, modal: modal, meridiemTime: meridiemTime,));
+    }
+    // mDialog(context, CommonImageDialogB(title: "457 Next Avenue",));
+  }
 
   productSaveApi() async {
 
@@ -126,7 +186,7 @@ class ScanAssetProvider with ChangeNotifier {
     else
       {
         Map<String, String> jsonData = {
-          "product_id" : "1",
+          "route_id" : "${modal?.data?.route?.id ?? 1}",
           "description" : notesCont.text,
         };
 
@@ -152,16 +212,22 @@ class ScanAssetProvider with ChangeNotifier {
           allImages = [];
           notifyListeners();
           showSnackBar("Submitted Succesfully");
-
-          // GoX.goPushRemoveUntil(const ReadyToScan());
+          // GoX.goPush(const StartScanAssetRouteB());
+          //
+          GoX.goPushRemoveUntil(ReadyToScan(address: modal?.data?.route?.address ?? '',));
         }
       }
   }
 
-  Future<dynamic>uploadInspectionApi(int routeId,int assetId,String note) async {
-    final response = await ApiBaseHelper().postApiCall(true,uploadInspection(routeId,assetId,note),null);
-    print("Route details Api hit 2:: ");
-    return response;
+  String amPm(inspectedTime){
+    String meridiemTime = "am";
+    String hours = inspectedTime.split(":")[0];
+
+    if(int.parse(hours) > 12)
+    {
+      meridiemTime = "pm";
+    }
+    return meridiemTime;
   }
 
 }

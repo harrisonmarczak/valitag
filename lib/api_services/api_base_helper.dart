@@ -19,7 +19,8 @@ import 'package:http/http.dart' as http;
 
 import 'app_exception.dart';
 
-class ApiBaseHelper {
+class ApiBaseHelper
+{
   http.Client? client = http.Client();
 
   Future<dynamic> getApiCall(String url, {bool? isShow = false, bool? isPopup = true}) async {
@@ -33,7 +34,8 @@ class ApiBaseHelper {
       }
 
       var apiHeader = {
-        authorization: "Bearer ${sp!.getString(SpUtil.ACCESS_TOKEN)}",
+        authorization:
+        "Bearer ${sp!.getString(SpUtil.ACCESS_TOKEN)}",
         accept: 'application/json',
         contentType: 'application/json',
       };
@@ -44,7 +46,7 @@ class ApiBaseHelper {
         }
         // print("apiHeader=========>>>> $apiHeader");
         print("ApiUrl=========>>>> ${BASE_URL + url}");
-        print("apiHeader=========>>>> $apiHeader");
+        log("apiHeader=========>>>> $apiHeader");
         print("statusCode=========>>>> ${response.statusCode}");
         log("response=========>>>> ${response.body}");
 
@@ -95,7 +97,7 @@ class ApiBaseHelper {
       };
       if (kDebugMode) {
         print("ApiUrl=========>>>> ${BASE_URL + url}");
-        print("apiHeader=========>>>> ${apiHeader}");
+        log("apiHeader=========>>>> ${apiHeader}");
         // print("apiHeader=========>>>> $apiHeader");
          print("request=========>>>> ${jsonEncode(jsonData)}");
       }

@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> navigateToNextScreen() async {
    var at = sp?.getString(SpUtil.ACCESS_TOKEN) ?? "";
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 3));
     if(at.toString().isNotEmpty)
       {
         GoX.goPushRemoveUntil(const ReadyToScan());
