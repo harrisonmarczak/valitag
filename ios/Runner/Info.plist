@@ -28,8 +28,6 @@
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NFCReaderUsageDescription</key>
-	<string>Your explanation of why the app needs NFC</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Allow Valitag to access the camera and gallery to upload a profile picture</string>
 	<key>NSMicrophoneUsageDescription</key>
@@ -51,6 +49,6 @@
     		<string>0000</string>
     </array>
 	<key>NFCReaderUsageDescription</key>
-    <string>Read NFC Tags</string>
+    <string>This app needs NFC access to read NFC tags</string>
 </dict>
 </plist>

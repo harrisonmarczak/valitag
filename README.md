@@ -1,6 +1,6 @@
 # valitag
 
-A new Flutter project. DhebaRam 
+A new Flutter project.
 
 ## Getting Started
 

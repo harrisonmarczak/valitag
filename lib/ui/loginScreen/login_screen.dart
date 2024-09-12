@@ -1,16 +1,11 @@
-import 'package:flutter/cupertino.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:valitag/button/smart_button.dart';
 import 'package:valitag/constants/fontFamily.dart';
 import 'package:valitag/constants/text/app_text.dart';
-import 'package:valitag/main.dart';
-import 'package:valitag/ui/routeList/route_list.dart';
-import 'package:valitag/utils/common_widget.dart';
 import 'package:valitag/utils/gox.dart';
-import 'package:valitag/utils/shared_preferences.dart';
 
 import '../../../constants/imageText/app_images.dart';
 import '../../constants/appColors.dart';
@@ -18,7 +13,6 @@ import '../../providers/auth_provider.dart';
 import '../../utils/navigator_service.dart';
 import '../../utils/show_dialog.dart';
 import '../readyToScan/ready_to_scan.dart';
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -351,6 +345,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> initNFC(AuthProvider value) async {
 
+
     final context = NavigationService.navigatorKey.currentContext;
     if (context == null) return;
     try {
@@ -361,6 +356,14 @@ class _LoginScreenState extends State<LoginScreen> {
       // Start session
       NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
         print('Data --- > ${tag.data}');
+
+        final encryptedData = CryptoService().encryptData(tag.toString());
+
+        final message = NdefMessage([
+          NdefRecord.createText(encryptedData),
+        ]);
+        print('Data written to NFC tag. Message ${message}');
+        print('Data written to NFC tag.');
 
         final Map<dynamic, dynamic> ndef = tag.data['ndef'] ?? {};
         List<int> identifierValue = ndef['identifier'] ?? [];
@@ -383,6 +386,27 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 }
+
+
+  // keyEncFun(){
+  //   var encrypt = "48392017486029503718";
+  //   // final key = encrypt.Key.fromLength(32);
+  //   // final iv = encrypt.IV.fromLength(16);
+  //   // final encrypter = encrypt.Encrypter(encrypt.AES(key));
+  //   final plainText = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit';
+  //
+  //   Key key = encrypt;
+  //   final iv = IV.fromSecureRandom(16);
+  //   final encrypter = Encrypter(AES(key));
+  //
+  //   final encrypted = encrypter.encrypt(plainText, iv: iv);
+  //   final decrypted = encrypter.decrypt(encrypted, iv: iv);
+  //
+  //   print(decrypted);
+  //   print(encrypted.bytes);
+  //   print(encrypted.base16);
+  //   print(encrypted.base64);
+  // }
 
 class AddDogModalSheet extends StatelessWidget {
   @override
@@ -422,3 +446,22 @@ class AddDogModalSheet extends StatelessWidget {
   }
 }
 
+
+
+
+class CryptoService {
+  final key = encrypt.Key.fromLength(32); // 256-bit key
+  final iv = encrypt.IV.fromLength(16);   // 128-bit IV
+
+  String encryptData(String plainText) {
+    final encrypter = encrypt.Encrypter(encrypt.AES(key));
+    final encrypted = encrypter.encrypt(plainText, iv: iv);
+    return encrypted.base64;
+  }
+
+  String decryptData(String encryptedText) {
+    final encrypter = encrypt.Encrypter(encrypt.AES(key));
+    final decrypted = encrypter.decrypt64(encryptedText, iv: iv);
+    return decrypted;
+  }
+}

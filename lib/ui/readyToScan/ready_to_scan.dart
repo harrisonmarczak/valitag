@@ -20,6 +20,7 @@ import '../../providers/common_provider.dart';
 import '../../utils/navigator_service.dart';
 import '../../utils/shared_preferences.dart';
 import '../../utils/show_dialog.dart';
+import '../loginScreen/login_screen.dart';
 
 class ReadyToScan extends StatefulWidget {
   final String? address;
@@ -49,6 +50,22 @@ class _ReadyToScanState extends State<ReadyToScan> {
     if (context == null) return;
     try {
       NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
+        var ndef = Ndef.from(tag);
+        var typeData;
+        if (ndef != null || ndef!.cachedMessage != null){
+          var data = ndef.cachedMessage!.records.first;
+          typeData = data.type;
+        }
+        print('Type--- > ${typeData}');
+
+        final encryptedData = CryptoService().encryptData(typeData); //tag.toString()
+
+        final message = NdefMessage([
+          NdefRecord.createText(encryptedData),
+        ]);
+
+        print("Message --- > ${message}");
+
         Map<String, dynamic> rawData = _extractRawData(tag);
         print('rawData ----  > ${rawData.keys.isNotEmpty}');
        if(rawData.keys.isNotEmpty){
